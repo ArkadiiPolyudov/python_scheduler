@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 class Scheduler:
     def __init__(self):
@@ -69,26 +70,31 @@ class Scheduler:
         time: str, 
         name: str,
     ) -> bool:
-        # if self.meetings.find_meeting(title) is not None: неправильный способ. Сразу ниже - правильный
         if self.find_meeting(title) is not None:
             return False
-        if time == "":
+
+
+            
+        try:
+            not_clean_time = datetime.strptime(time, "%H:%M")
+        except ValueError:
             return False
+
+        clean_time = not_clean_time.strftime("%H:%M")
+        
         for meeting in self.meetings:
-            if meeting["time"] == time:
+            if meeting["time"] == clean_time:
                 return False
+        
         new_meeting = {
-                "title": title,
-                "time": time,
-                "name": name,
-        }
+            "title": title,
+            "time": clean_time,
+            "name": name,                            
+            }
 
         self.meetings.append(new_meeting)
         self.save_meetings()
         return True
-
-
-
 
     def delete_meeting(
         self,
@@ -103,5 +109,8 @@ class Scheduler:
 
 
     
+
+
 scheduler = Scheduler()
+print(scheduler.add_meeting_in_meetings("test12","2599","test12"))
 print(scheduler.meetings)
